@@ -2,17 +2,29 @@ SETLOCAL EnableDelayedExpansion
 
 set batchlocation="%cd%"
 
+set echotog=off
+
+::total functions:
+set functotal=7
+::total pages : 
+set pagetotal=2
+::CHANGE WHEN ADDING FUNCTIONS
+
 ::------------------------------------------------------------------------------
 
-:changes title
-TITLE Blue's Cool and Not-at-all Ripoff Universal Menu
+::changes title
+TITLE Blue's Cool and Epic Random Functions Menu      (0.2.1)
 goto menu1
+
+::------------------------------------------------------------------------------
 
 :menu1
 cls
-@echo off
+@echo !echotog!
 set Input=Q
 set menunum=menu1
+set menunum2=1
+set menunum3=menu!menunum2!
 color 0E
 echo(
 echo    Random Tools (and Junk That is Mildly Annoying to Type Manually)
@@ -23,29 +35,20 @@ echo   1.  Open new command prompt window
 echo   2.  ipconfig
 echo   3.  Ookla Speedtest
 echo   4.  System Information
-echo   5.  tasklist / taskkill                              showing 1-5 of 7
-echo                                                                  Page 1
+echo   5.  tasklist / taskkill                              showing 1-5 of %functotal%
+echo                                                                  Page %menunum2%
 echo q to quit (ENTER)                  select(k) next(l)
-set /p Input=Selection:
-If /I "%Input%"=="1" goto option1
-If /I "%Input%"=="2" goto option2
-If /I "%Input%"=="3" goto option3
-If /I "%Input%"=="4" goto option4
-If /I "%Input%"=="5" goto option5
-If /I "%Input%"=="Q" goto quit
-If /I "%Input%"=="l" goto menu2
-If /I "%Input%"=="k" goto menuselect
-echo Invalid selection
-pause
-goto menu1
+echo o for options
+goto selection
 
 
 
 :menu2
 cls
-@echo off
 set Input=Q
 set menunum=menu2
+set menunum2=2
+set menunum3=menu!menunum2!
 color 0E
 echo(
 echo    Random Tools (and Junk That is Mildly Annoying to Type Manually)
@@ -56,19 +59,53 @@ echo   6.  chkdsk
 echo   7.  System file checker (Admin only)
 echo(
 echo(
-echo(                                                       showing 6-7 of 7
-echo                                                                  Page 2
+echo(                                                       showing 6-7 of %functotal%
+echo                                                                  Page %menunum2%
 echo q to quit (ENTER)      previous(j) select(k)
-set /p Input=Selection:
+echo o for options
+goto selection
+
+
+:selection
+set /p Input=:
+If /I "%Input%"=="1" goto option1
+If /I "%Input%"=="2" goto option2
+If /I "%Input%"=="3" goto option3
+If /I "%Input%"=="4" goto option4
+If /I "%Input%"=="5" goto option5
 If /I "%Input%"=="6" goto option6
 If /I "%Input%"=="7" goto option7
 If /I "%Input%"=="Q" goto quit
-If /I "%Input%"=="j" goto menu1
+If /I "%Input%"=="l" goto next
 If /I "%Input%"=="k" goto menuselect
+If /I "%Input%"=="j" goto back
+If /I "%Input%"=="o" goto optionsmenu
 echo Invalid selection
 pause
-goto menu2
+goto !menunum3!
 
+:next
+set menunum3=menu!menunum2!
+IF !menunum2! LSS %pagetotal% (
+    set /a "menunum2=(!menunum2!+1)"
+) ELSE (
+     goto fail
+)
+set menunum3=menu!menunum2!
+goto !menunum3!
+
+:back
+set menunum3=menu!menunum2!
+IF !menunum2! GTR 1 (
+    set /a "menunum2=(!menunum2!-1)"
+) ELSE (
+     goto fail
+)
+set menunum3=menu!menunum2!
+goto !menunum3!
+
+:fail
+goto !menunum3!
 
 ::menu selection and option selection is messy, could just goto to a list of options with
 ::the input and not clear the screen to retain the echo of the menu
@@ -77,6 +114,8 @@ goto menu2
 ::so you get this lazy system where it's printing the entire menu every time, and the selection
 ::system is part of each menu
 ::might fix later, idk
+
+::disregard all this, i fixed it at the cost of my sanity
 
 :menuselect
 color 0E
@@ -88,11 +127,41 @@ echo --------------------------
 echo Input page number (1-2)
 echo(
 echo q to cancel
-set /p mensel=Selection:
+set /p mensel=Page:
 If /I "%mensel%"=="q" goto %menunum%
 goto menu%mensel%
 pause
 goto menuselect
+
+:optionsmenu
+color 0F
+cls
+echo ------------------------------------------
+echo                 OPTIONS
+echo ------------------------------------------
+echo Input desired option
+echo   1. Toggle echo
+echo q to cancel
+echo (Default=q)
+set /p optionsel=:
+If /I "%optionsel%"=="1" (
+    goto echotog1
+)
+If /I "%optionsel%"=="q" goto !menunum3!
+echo Invalid selection
+pause
+goto optionsmenu
+
+:echotog1
+If !echotog! EQU on (
+    set echotog=off
+) ELSE (
+    set echotog=on
+)
+cls
+echo Echo is now %echotog%!
+pause
+goto menu1
 
 
 
@@ -104,7 +173,7 @@ echo Do you want an elevated command prompt? [Y/N]
 echo (Default=N)
 echo q to cancel
 echo(
-set /p cmdyn=Selection:
+set /p cmdyn=:
 If /I "%cmdyn%"=="Y" goto cmdy
 If /I "%cmdyn%"=="N" goto cmdn
 If /I "%cmdyn%"=="q" goto menu1
@@ -119,7 +188,7 @@ color 0F
 echo Please enter your account username:
 echo(
 echo q to cancel
-set /p cmduser=Selection:
+set /p cmduser=Username:
 If /I "%cmduser%"=="q" goto %menunum%
 goto cmdad
 pause
@@ -154,7 +223,7 @@ echo   4. Release all connections
 echo   5. Release and then renew all connections
 echo q to cancel
 echo (Default=1)
-set /p ipc=Selection:
+set /p ipc=:
 If /I "%ipc%"=="1" goto ipc1
 If /I "%ipc%"=="2" goto ipc2
 If /I "%ipc%"=="3" goto ipc3
@@ -169,13 +238,13 @@ goto option2
 cls
 ipconfig
 pause
-goto menu1
+goto option2
 
 :ipc2
 cls
 ipconfig /all
 pause
-goto menu1
+goto option2
 
 :ipc3
 set ipcc3=N
@@ -184,7 +253,7 @@ cls
 echo Are you sure you want to renew all connections? [Y/N]
 echo (Default=N)
 echo(
-set /p ipcc3=Selection:
+set /p ipcc3=:
 If /I "%ipcc3%"=="Y" goto ipc3c
 If /I "%ipcc3%"=="N" goto option2
 echo Invalid selection
@@ -195,7 +264,7 @@ color 0F
 cls
 ipconfig /renew
 pause
-goto menu1
+goto option2
 
 :ipc4
 color 0C
@@ -204,7 +273,7 @@ cls
 echo Are you sure you want to release all connections? [Y/N]
 echo (Default=N)
 echo(
-set /p ipcc4=Selection:
+set /p ipcc4=:
 If /I "%ipcc4%"=="Y" goto ipc4c
 If /I "%ipcc4%"=="N" goto option2
 echo Invalid selection
@@ -215,7 +284,7 @@ color 0F
 cls
 ipconfig /release
 pause
-goto menu1
+goto option2
 
 :ipc5
 color 0C
@@ -224,7 +293,7 @@ cls
 echo Are you sure you want to release and renew all connections? [Y/N]
 echo (Default=N)
 echo(
-set /p ipcc5=Selection:
+set /p ipcc5=:
 If /I "%ipcc5%"=="Y" goto ipc5c
 If /I "%ipcc5%"=="N" goto option2
 echo Invalid selection
@@ -237,7 +306,7 @@ ipconfig /release
 timeout 5 >nul
 ipconfig /renew
 pause
-goto menu1
+goto option2
 
 
 :option3
@@ -273,7 +342,7 @@ set sysinfc=Y
 color 0E
 echo Do you want to check current system info? [Y/N]
 echo (Default=Y)
-set /p sysinfc=Selection:
+set /p sysinfc=:
 If /I "%sysinfc%"=="Y" goto sysinfrun
 If /I "%sysinfc%"=="N" goto menu1
 echo Invalid selection
@@ -324,7 +393,7 @@ echo   5. taskkill
 echo   6. taskkill            (force terminate)
 echo q to cancel
 echo (Default=1)
-set /p taskst=Selection:
+set /p taskst=:
 If /I "%taskst%"=="1" goto taskl1
 If /I "%taskst%"=="2" goto taskl2
 If /I "%taskst%"=="3" goto taskl3
@@ -382,7 +451,7 @@ echo ------------------------------------------
 echo Input PID of program you wish to kill:
 echo(
 echo q to cancel (ENTER)
-set /p taskselect=Selection:
+set /p taskselect=PID:
 If /I "%taskselect%"=="q" goto option5
 goto taskl5c
 :taskl5c
@@ -392,7 +461,7 @@ cls
 echo Are you sure you want to kill this task? [Y/N] (Default=N)
 echo:PID: %taskselect%
 echo(
-set /p taskkillc=Selection:
+set /p taskkillc=:
 If /I "%taskkillc%"=="Y" goto taskl5cy
 If /I "%taskkillc%"=="N" goto option5
 echo Invalid selection
@@ -402,7 +471,7 @@ goto taskl5c
 color 0F
 cls
 taskkill /PID %taskselect%
-echo Task killed successfully!
+echo Task with PID = %taskselect% killed successfully!
 pause
 goto option5
 
@@ -416,7 +485,7 @@ echo ------------------------------------------
 echo Input PID of program you wish to kill:
 echo(
 echo q to cancel (ENTER)
-set /p taskselect=Selection:
+set /p taskselect=PID:
 If /I "%taskselect%"=="q" goto option5
 goto taskl6c
 :taskl6c
@@ -426,7 +495,7 @@ cls
 echo Are you sure you want to kill this task? [Y/N] (Default=N)
 echo:PID: %taskselect%
 echo(
-set /p taskkillc=Selection:
+set /p taskkillc=:
 If /I "%taskkillc%"=="Y" goto taskl6cy
 If /I "%taskkillc%"=="N" goto option5
 echo Invalid selection
@@ -436,7 +505,7 @@ goto taskl6c
 color 0F
 cls
 taskkill /F /PID %taskselect%
-echo Task killed successfully!
+echo Task with PID = %taskselect% killed successfully!
 pause
 goto option5
 
@@ -456,7 +525,7 @@ echo   3. chkdsk with bad sector recovery
 echo   4. chkdsk fast scan          (NTFS only)
 echo q to cancel
 echo (Default=1)
-set /p chksel=Selection:
+set /p chksel=:
 If /I "%chksel%"=="1" goto chksel1
 If /I "%chksel%"=="2" goto chksel2
 If /I "%chksel%"=="3" goto chksel3
@@ -470,12 +539,12 @@ goto option6
 color 0F
 set chkdrive=q
 cls
-echo Select drive letter (followed by colon)
-echo e.g. C:
+echo Specify drive letter
+echo e.g. C
 echo(
 echo q to cancel
 echo (Default=q)
-set /p chkdrive=Selection:
+set /p chkdrive=Drive:
 If /I "%chkdrive%"=="q" goto option6
 goto chksel1d
 :chksel1d
@@ -485,7 +554,7 @@ cls
 echo Are you sure you want to run chkdsk? [Y/N]
 echo(
 echo (Default=N)
-set /p chksel1ds=Selection:
+set /p chksel1ds=:
 If /I "%chksel1ds%"=="Y" goto chksel1dsc
 If /I "%chksel1ds%"=="N" goto option6
 echo Invalid selection
@@ -494,7 +563,7 @@ goto chksel1d
 :chksel1dsc
 color 0F
 cls
-chkdsk %chkdrive%
+chkdsk %chkdrive%:
 pause
 goto %menunum%
 
@@ -502,12 +571,12 @@ goto %menunum%
 color 0F
 set chkdrive=q
 cls
-echo Select drive letter (followed by colon)
-echo e.g. C:
+echo Specify drive letter
+echo e.g. C
 echo(
 echo q to cancel
 echo (Default=q)
-set /p chkdrive=Selection:
+set /p chkdrive=Drive:
 If /I "%chkdrive%"=="q" goto option6
 goto chksel2d
 :chksel2d
@@ -517,7 +586,7 @@ cls
 echo Are you sure you want to run chkdsk with error correction? [Y/N]
 echo(
 echo (Default=N)
-set /p chksel2ds=Selection:
+set /p chksel2ds=:
 If /I "%chksel2ds%"=="Y" goto chksel2dsc
 If /I "%chksel2ds%"=="N" goto option6
 echo Invalid selection
@@ -526,7 +595,7 @@ goto chksel2d
 :chksel2dsc
 color 0F
 cls
-chkdsk %chkdrive% /F
+chkdsk %chkdrive%: /F
 pause
 goto %menunum%
 
@@ -534,12 +603,12 @@ goto %menunum%
 color 0F
 set chkdrive=q
 cls
-echo Select drive letter (followed by colon)
-echo e.g. C:
+echo Specify drive letter
+echo e.g. C
 echo(
 echo q to cancel
 echo (Default=q)
-set /p chkdrive=Selection:
+set /p chkdrive=Drive:
 If /I "%chkdrive%"=="q" goto option6
 goto chksel3d
 :chksel3d
@@ -549,7 +618,7 @@ cls
 echo Are you sure you want to run chkdsk with bad sector recovery? [Y/N]
 echo(
 echo (Default=N)
-set /p chksel3ds=Selection:
+set /p chksel3ds=:
 If /I "%chksel3ds%"=="Y" goto chksel3dsc
 If /I "%chksel3ds%"=="N" goto option6
 echo Invalid selection
@@ -558,7 +627,7 @@ goto chksel3d
 :chksel3dsc
 color 0F
 cls
-chkdsk %chkdrive% /R
+chkdsk %chkdrive%: /R
 pause
 goto %menunum%
 
@@ -566,12 +635,12 @@ goto %menunum%
 color 0F
 set chkdrive=q
 cls
-echo Select drive letter (followed by colon)
-echo e.g. C:
+echo Specify drive letter
+echo e.g. C
 echo(
 echo q to cancel
 echo (Default=q)
-set /p chkdrive=Selection:
+set /p chkdrive=Drive:
 If /I "%chkdrive%"=="q" goto option6
 goto chksel4d
 :chksel4d
@@ -581,7 +650,7 @@ cls
 echo Are you sure you want to run chkdsk? [Y/N]
 echo(
 echo (Default=N)
-set /p chksel4ds=Selection:
+set /p chksel4ds=:
 If /I "%chksel4ds%"=="Y" goto chksel4dsc
 If /I "%chksel4ds%"=="N" goto option6
 echo Invalid selection
@@ -590,7 +659,7 @@ goto chksel4d
 :chksel4dsc
 color 0F
 cls
-chkdsk %chkdrive% /perf
+chkdsk %chkdrive%: /perf
 pause
 goto %menunum%
 
@@ -609,7 +678,7 @@ echo   2. Run sfc in verify-only mode
 echo   3. Scan a specific file
 echo q to cancel
 echo (Default=1)
-set /p sfcsel=Selection:
+set /p sfcsel=:
 if "%sfcsel%"=="1" goto sfcsel1
 if "%sfcsel%"=="2" goto sfcsel2
 if "%sfcsel%"=="3" goto sfcsel3
@@ -625,7 +694,7 @@ cls
 echo Are you sure you want to run sfc? [Y/N]
 echo(
 echo (Default=N)
-set /p sfcsel1s=Selection:
+set /p sfcsel1s=:
 If /I "%sfcsel1s%"=="Y" goto sfcsel1sd
 If /I "%sfcsel1s%"=="N" goto option7
 echo Invalid selection
@@ -646,7 +715,7 @@ cls
 echo Are you sure you want to run sfc in verify-only mode? [Y/N]
 echo(
 echo (Default=N)
-set /p sfcsel2s=Selection:
+set /p sfcsel2s=:
 If /I "%sfcsel2s%"=="Y" goto sfcsel2sd
 If /I "%sfcsel2s%"=="N" goto option7
 echo Invalid selection
@@ -669,7 +738,7 @@ echo e.g. C:\Users\User\Desktop\Notepad.txt
 echo(
 echo q to quit
 echo (Default=q)
-set /p sfcpath=Selection:
+set /p sfcpath=:
 If /I "%sfcpath%"=="q" goto option7
 goto sfcsel3s
 :sfcsel3s
@@ -682,7 +751,7 @@ echo:File location: %sfcpath%
 echo(
 echo q to cancel
 echo (Default=q)
-set /p sfcsel3sd=Selection:
+set /p sfcsel3sd=:
 If /I "%sfcsel3sd%"=="Y" goto sfcsel3sds
 If /I "%sfcsel3sd%"=="N" goto option7
 echo Invalid selection
