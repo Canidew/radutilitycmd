@@ -6,3 +6,5 @@ good ol marcus told me to upload here so if anybody wants it, go for it, though 
 my terrible scripting
 
 i might streamline it at some point but for now it only has 2 pages and 7 options so its not like its lifethreatening
+
+edit: streamlined it 2 hours after writing it
